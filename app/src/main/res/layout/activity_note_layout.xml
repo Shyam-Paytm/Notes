@@ -7,7 +7,8 @@
     <TextView
         android:id="@+id/note_title"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp" />
 
     <TextView
         android:id="@+id/note_body"
@@ -15,5 +16,14 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp" />
+
+    <Button
+        android:id="@+id/delete_note_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/delete"
+        android:textSize="15sp" />
 
 </LinearLayout>

@@ -27,12 +27,22 @@ class AddNoteActivity : AppCompatActivity() {
             MainViewModelFactory(noteRepository)
         )[MainViewModel::class.java]
 
+        // On Cancel, go back to main activity
+        binding.cancelButton.setOnClickListener {
+            navigateToMainActivity()
+        }
+
         // Add Note in Database and navigate to main activity
         binding.addButton.setOnClickListener {
             val title = binding.addTitle.text.toString()
             val body = binding.addBody.text.toString()
             viewModel.insertNote(NoteEntity(title = title, body = body))
-            startActivity(Intent(this, MainActivity::class.java))
+            navigateToMainActivity()
         }
+    }
+
+    private fun navigateToMainActivity() {
+        startActivity(Intent(this, MainActivity::class.java))
+
     }
 }

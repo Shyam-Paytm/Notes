@@ -3,7 +3,7 @@ package com.example.notes.activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.lifecycle.Observer
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.example.notes.adapters.NotesAdapter
 import com.example.notes.databinding.ActivityMainBinding
@@ -30,14 +30,32 @@ class MainActivity : AppCompatActivity() {
             MainViewModelFactory(noteRepository)
         )[MainViewModel::class.java]
 
-        viewModel.getAllNotes().observe(this, Observer {
-            println(it)
-            binding.notesList.adapter = NotesAdapter(it)
-        })
+        viewModel.getAllNotes().observe(this) {
+            binding.notesList.adapter = NotesAdapter(it, viewModel)
+        }
 
         // Navigate to Add Note Page
         binding.addNote.setOnClickListener {
-            startActivity(Intent(this, AddNoteActivity::class.java))
+            navigateToAddNoteActivity()
+        }
+
+        // Search on Notes
+        binding.searchButton.setOnClickListener {
+            val searchText = binding.searchText.text.toString()
+            Toast(this).apply {
+                setText(searchText)
+                duration = Toast.LENGTH_LONG
+                show()
+            }
+            // TODO : Add Logic to filter the Notes
         }
     }
+
+    private fun navigateToAddNoteActivity() {
+        startActivity(Intent(this, AddNoteActivity::class.java))
+    }
 }
+
+/* insert kr rha hun toh apne aap, new data kasie fetch kr rha hai
+jbki get all notes wala method call bhi ni kiya
+ */
