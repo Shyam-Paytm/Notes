@@ -1,9 +1,10 @@
 package com.example.notes.activity
 
+import android.annotation.SuppressLint
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.example.notes.adapters.NotesAdapter
 import com.example.notes.databinding.ActivityMainBinding
@@ -17,6 +18,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: MainViewModel
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -30,8 +32,13 @@ class MainActivity : AppCompatActivity() {
             MainViewModelFactory(noteRepository)
         )[MainViewModel::class.java]
 
+
+        val adapter = NotesAdapter(this, mutableListOf(), viewModel)
+        binding.notesList.adapter = adapter
+
         viewModel.getAllNotes().observe(this) {
-            binding.notesList.adapter = NotesAdapter(it, viewModel)
+            adapter.changeList(it)
+            adapter.notifyDataSetChanged()
         }
 
         // Navigate to Add Note Page
@@ -56,6 +63,3 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-/* insert kr rha hun toh apne aap, new data kasie fetch kr rha hai
-jbki get all notes wala method call bhi ni kiya
- */

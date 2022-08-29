@@ -21,6 +21,12 @@ class MainViewModel(private val noteRepository: NoteRepository) : ViewModel() {
         }
     }
 
+    fun updateNote(noteEntity: NoteEntity) {
+        viewModelScope.launch {
+            noteRepository.updateNote(noteEntity)
+        }
+    }
+
     fun deleteNote(noteEntity: NoteEntity) {
         viewModelScope.launch {
             noteRepository.deleteNote(noteEntity)

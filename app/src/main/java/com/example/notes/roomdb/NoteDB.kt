@@ -14,13 +14,15 @@ abstract class NoteDB : RoomDatabase() {
 
         fun getInstance(context: Context): NoteDB {
             if (INSTANCE == null) {
-                INSTANCE = Room.databaseBuilder(
-                    context.applicationContext,
-                    NoteDB::class.java,
-                    "NotesDB"
-                )
-                    .fallbackToDestructiveMigration()
-                    .build()
+                synchronized(this) {
+                    INSTANCE = Room.databaseBuilder(
+                        context.applicationContext,
+                        NoteDB::class.java,
+                        "NotesDB"
+                    )
+                        .fallbackToDestructiveMigration()
+                        .build()
+                }
             }
             return INSTANCE as NoteDB
         }

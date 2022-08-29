@@ -1,5 +1,7 @@
 package com.example.notes.adapters
 
+import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,15 +9,22 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.notes.R
+import com.example.notes.activity.AddNoteActivity
 import com.example.notes.roomdb.NoteEntity
 import com.example.notes.viewModels.MainViewModel
 
-class NotesAdapter(private val dataSet: List<NoteEntity>, private val viewModel: MainViewModel) :
+class NotesAdapter(
+    private val context: Context,
+    private var dataSet: List<NoteEntity>,
+    private val viewModel: MainViewModel
+) :
     RecyclerView.Adapter<NotesAdapter.NoteViewHolder>() {
+
     class NoteViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val titleTextView: TextView = view.findViewById(R.id.note_title)
         val bodyTextView: TextView = view.findViewById(R.id.note_body)
         val deleteButton: Button = view.findViewById(R.id.delete_note_button)
+        val editButton: Button = view.findViewById(R.id.edit_note_button)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
@@ -33,9 +42,22 @@ class NotesAdapter(private val dataSet: List<NoteEntity>, private val viewModel:
         holder.deleteButton.setOnClickListener {
             viewModel.deleteNote(item)
         }
+
+        // Go to Edit page
+        holder.editButton.setOnClickListener {
+            val intent = Intent(context, AddNoteActivity::class.java).apply {
+                putExtra("data", item)
+            }
+            context.startActivity(intent)
+        }
+
     }
 
     override fun getItemCount(): Int {
         return dataSet.size
+    }
+
+    fun changeList(newList: List<NoteEntity>) {
+        dataSet = newList
     }
 }

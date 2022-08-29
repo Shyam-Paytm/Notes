@@ -24,8 +24,7 @@
         android:layout_marginTop="20dp"
         android:hint="@string/body"
         android:importantForAutofill="no"
-        android:inputType="text"
-        android:minHeight="100dp"
+        android:inputType="textLongMessage"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/add_title" />
 
@@ -43,14 +42,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@color/purple_200"
-            android:text="Cancel"
+            android:text="@string/cancel"
             android:textSize="18sp" />
 
         <Button
             android:id="@+id/add_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
             android:background="@color/purple_200"
             android:text="@string/add"
             android:textSize="18sp" />
