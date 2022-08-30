@@ -14,14 +14,14 @@ import com.example.notes.viewModels.MainViewModel
 class AddNoteActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddNoteBinding
     private lateinit var viewModel: MainViewModel
+    private lateinit var noteRepository: NoteRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddNoteBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val noteDao = NoteDB.getInstance(this).getNoteDao()
-        val noteRepository = NoteRepository(noteDao)
+        noteRepository = NoteRepository(NoteDB.getInstance(this).getNoteDao())
         viewModel = ViewModelProvider(
             this,
             MainViewModelFactory(noteRepository)

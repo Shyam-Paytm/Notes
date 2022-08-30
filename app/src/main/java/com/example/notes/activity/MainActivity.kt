@@ -1,6 +1,5 @@
 package com.example.notes.activity
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -18,7 +17,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: MainViewModel
 
-    @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -38,7 +36,6 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.getAllNotes().observe(this) {
             adapter.changeList(it)
-            adapter.notifyDataSetChanged()
         }
 
         // Navigate to Add Note Page

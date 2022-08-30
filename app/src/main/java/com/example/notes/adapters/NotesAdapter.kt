@@ -1,5 +1,6 @@
 package com.example.notes.adapters
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
@@ -50,14 +51,15 @@ class NotesAdapter(
             }
             context.startActivity(intent)
         }
-
     }
 
     override fun getItemCount(): Int {
         return dataSet.size
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun changeList(newList: List<NoteEntity>) {
         dataSet = newList
+        notifyDataSetChanged()
     }
 }
