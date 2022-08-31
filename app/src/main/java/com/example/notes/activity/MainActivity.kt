@@ -2,7 +2,7 @@ package com.example.notes.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
+import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.example.notes.adapters.NotesAdapter
@@ -16,6 +16,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: MainViewModel
+    private lateinit var adapter: NotesAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         )[MainViewModel::class.java]
 
 
-        val adapter = NotesAdapter(this, mutableListOf(), viewModel)
+        adapter = NotesAdapter(this, mutableListOf(), viewModel)
         binding.notesList.adapter = adapter
 
         viewModel.getAllNotes().observe(this) {
@@ -45,18 +46,37 @@ class MainActivity : AppCompatActivity() {
 
         // Search on Notes
         binding.searchButton.setOnClickListener {
-            val searchText = binding.searchText.text.toString()
-            Toast(this).apply {
-                setText(searchText)
-                duration = Toast.LENGTH_LONG
-                show()
-            }
-            // TODO : Add Logic to filter the Notes
+            val searchText = binding.searchText.query.toString()
+            handleSearch(searchText)
         }
+
+        // Search on Notes
+        binding.searchText.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(p0: String?): Boolean {
+                if (p0 != null) {
+                    handleSearch(p0)
+                }
+                return true
+            }
+
+            override fun onQueryTextChange(p0: String?): Boolean {
+//                if (p0 != null) {
+//                    handleSearch(p0)
+//                }
+                return true
+            }
+        })
     }
 
+    // Handle Search
+    private fun handleSearch(searchVal: String?) {
+        binding.searchText.clearFocus()
+        viewModel.getAllNotes("%$searchVal%", adapter)
+    }
+
+
+    // Navigate to add Activity page
     private fun navigateToAddNoteActivity() {
         startActivity(Intent(this, AddNoteActivity::class.java))
     }
 }
-

@@ -7,22 +7,27 @@ import com.example.notes.roomdb.NoteEntity
 class NoteRepository(private val noteDao: NoteDao) {
 
     // Fetch all Notes
-    fun getAllNotes():LiveData<List<NoteEntity>>{
+    fun getAllNotes(): LiveData<List<NoteEntity>> {
         return noteDao.getAllNote()
     }
 
+    // Search in Notes
+    suspend fun getAllNotes(searchQuery: String): List<NoteEntity> {
+        return noteDao.getAllNote(searchQuery)
+    }
+
     // Insert a Note
-    suspend fun insertNote(noteEntity: NoteEntity){
+    suspend fun insertNote(noteEntity: NoteEntity) {
         noteDao.insertNote(noteEntity)
     }
 
     // Update a Note
-    suspend fun updateNote(noteEntity: NoteEntity){
+    suspend fun updateNote(noteEntity: NoteEntity) {
         noteDao.updateNote(noteEntity)
     }
 
     // Delete a Note
-    suspend fun deleteNote(noteEntity: NoteEntity){
+    suspend fun deleteNote(noteEntity: NoteEntity) {
         noteDao.deleteNote(noteEntity)
     }
 
