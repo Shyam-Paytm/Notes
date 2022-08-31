@@ -9,19 +9,25 @@ import com.example.notes.adapters.NotesAdapter
 import com.example.notes.databinding.ActivityMainBinding
 import com.example.notes.repositories.NoteRepository
 import com.example.notes.roomdb.NoteDB
+import com.example.notes.roomdb.NoteEntity
 import com.example.notes.viewModelFactory.MainViewModelFactory
 import com.example.notes.viewModels.MainViewModel
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: MainViewModel
     private lateinit var adapter: NotesAdapter
+    private lateinit var searchView: SearchView
+    private var notesList: MutableList<NoteEntity> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        searchView = binding.searchText
 
         // Initialize the Dao, Repository and View Model
         val noteDao = NoteDB.getInstance(this).getNoteDao()
@@ -37,8 +43,11 @@ class MainActivity : AppCompatActivity() {
 
         // Clear Search and Update Adapter
         viewModel.getAllNotes().observe(this) {
-            binding.searchText.setQuery("", false)
-            adapter.changeList(it)
+            searchView.setQuery("", false)
+            searchView.clearFocus()
+            notesList.clear()
+            notesList.addAll(it)
+            adapter.changeList(notesList)
         }
 
         // Navigate to Add Note Page
@@ -47,24 +56,16 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Search on Notes
-        binding.searchButton.setOnClickListener {
-            val searchText = binding.searchText.query.toString()
-            handleSearch(searchText)
-        }
-
-        // Search on Notes
-        binding.searchText.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(p0: String?): Boolean {
-                if (p0 != null) {
-                    handleSearch(p0)
-                }
+                searchView.clearFocus()
                 return true
             }
 
             override fun onQueryTextChange(p0: String?): Boolean {
-//                if (p0 != null) {
-//                    handleSearch(p0)
-//                }
+                if (p0 != null) {
+                    handleSearch(p0)
+                }
                 return true
             }
         })
@@ -72,8 +73,20 @@ class MainActivity : AppCompatActivity() {
 
     // Handle Search
     private fun handleSearch(searchVal: String?) {
-        binding.searchText.clearFocus()
-        viewModel.getAllNotes("%$searchVal%", adapter)
+        val searchText = searchVal!!.lowercase(Locale.getDefault())
+        val tempNotes: MutableList<NoteEntity> = mutableListOf()
+        if (searchText.isNotEmpty()) {
+            notesList.forEach {
+                val tempTitle = it.title.lowercase(Locale.getDefault())
+                val tempBody = it.body.lowercase(Locale.getDefault())
+                if (tempTitle.contains(searchText) || tempBody.contains(searchText)) {
+                    tempNotes.add(it)
+                }
+            }
+            adapter.changeList(tempNotes)
+        } else {
+            adapter.changeList(notesList)
+        }
     }
 
     // Navigate to add Activity page
@@ -81,9 +94,3 @@ class MainActivity : AppCompatActivity() {
         startActivity(Intent(this, AddNoteActivity::class.java))
     }
 }
-
-// for search, implement logic in code itself
-// show, only fix characters in body
-// Think to show body
-// Read gridlayout
-// fix ui

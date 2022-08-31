@@ -6,7 +6,6 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -37,7 +36,7 @@ class NotesAdapter(
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         val item = dataSet[position]
         holder.titleTextView.text = position.plus(1).toString().plus(". ").plus(item.title)
-        holder.bodyTextView.text = item.body
+        holder.bodyTextView.text = item.body.take(30).plus(if (item.body.length > 30) "..." else "")
 
         // Delete Note on button click
         holder.deleteButton.setOnClickListener {
@@ -53,7 +52,7 @@ class NotesAdapter(
         }
     }
 
-    private fun navigateToAddNoteActivity(data:NoteEntity){
+    private fun navigateToAddNoteActivity(data: NoteEntity) {
         val intent = Intent(context, AddNoteActivity::class.java).apply {
             putExtra("data", data)
         }

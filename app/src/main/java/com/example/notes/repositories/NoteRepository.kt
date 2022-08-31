@@ -11,11 +11,6 @@ class NoteRepository(private val noteDao: NoteDao) {
         return noteDao.getAllNote()
     }
 
-    // Search in Notes
-    suspend fun getAllNotes(searchQuery: String): List<NoteEntity> {
-        return noteDao.getAllNote(searchQuery)
-    }
-
     // Insert a Note
     suspend fun insertNote(noteEntity: NoteEntity) {
         noteDao.insertNote(noteEntity)

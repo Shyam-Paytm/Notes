@@ -16,15 +16,6 @@ class MainViewModel(private val noteRepository: NoteRepository) : ViewModel() {
         return noteRepository.getAllNotes()
     }
 
-    fun getAllNotes(searchQuery: String, adapter: NotesAdapter) {
-        viewModelScope.launch {
-            val data = noteRepository.getAllNotes(searchQuery)
-            withContext(Dispatchers.Main) {
-                adapter.changeList(data)
-            }
-        }
-    }
-
     fun insertNote(noteEntity: NoteEntity) {
         viewModelScope.launch {
             noteRepository.insertNote(noteEntity)
