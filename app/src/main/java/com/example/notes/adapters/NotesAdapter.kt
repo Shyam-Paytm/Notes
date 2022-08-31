@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.notes.R
@@ -24,8 +25,7 @@ class NotesAdapter(
     class NoteViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val titleTextView: TextView = view.findViewById(R.id.note_title)
         val bodyTextView: TextView = view.findViewById(R.id.note_body)
-        val deleteButton: Button = view.findViewById(R.id.delete_note_button)
-        val editButton: Button = view.findViewById(R.id.edit_note_button)
+        val deleteButton: ImageButton = view.findViewById(R.id.delete_note_button)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
@@ -45,12 +45,19 @@ class NotesAdapter(
         }
 
         // Go to Edit page
-        holder.editButton.setOnClickListener {
-            val intent = Intent(context, AddNoteActivity::class.java).apply {
-                putExtra("data", item)
-            }
-            context.startActivity(intent)
+        holder.titleTextView.setOnClickListener {
+            navigateToAddNoteActivity(item)
         }
+        holder.bodyTextView.setOnClickListener {
+            navigateToAddNoteActivity(item)
+        }
+    }
+
+    private fun navigateToAddNoteActivity(data:NoteEntity){
+        val intent = Intent(context, AddNoteActivity::class.java).apply {
+            putExtra("data", data)
+        }
+        context.startActivity(intent)
     }
 
     override fun getItemCount(): Int {

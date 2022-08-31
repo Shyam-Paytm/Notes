@@ -35,7 +35,7 @@ class AddNoteActivity : AppCompatActivity() {
 
         // On Cancel, go back to main activity
         binding.cancelButton.setOnClickListener {
-            navigateToMainActivity()
+            onBackPressed()
         }
 
         /* Add Note in Database
@@ -54,7 +54,7 @@ class AddNoteActivity : AppCompatActivity() {
             } else {
                 viewModel.insertNote(NoteEntity(title = title, body = body))
             }
-            navigateToMainActivity()
+            onBackPressed()
         }
     }
 
@@ -63,21 +63,13 @@ class AddNoteActivity : AppCompatActivity() {
     then change UI as per Edit page
      */
     private fun handleEditUI(data: NoteEntity) {
-        binding.addButton.text = getString(R.string.edit)
+        binding.addButton.text = getString(R.string.save)
         binding.addTitle.apply {
             setText(data.title)
         }
         binding.addBody.apply {
             setText(data.body)
         }
-    }
-
-    override fun onBackPressed() {
-        navigateToMainActivity()
-    }
-
-    private fun navigateToMainActivity() {
-        finish()
     }
 
 }

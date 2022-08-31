@@ -2,47 +2,40 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
-
-    <TextView
-        android:id="@+id/note_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:hint="@string/title"
-        android:textSize="25sp" />
-
-    <TextView
-        android:id="@+id/note_body"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="10dp"
-        android:hint="@string/body"
-        android:textSize="20sp" />
+    android:orientation="horizontal">
 
     <LinearLayout
-        android:id="@+id/button_layout"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="10dp">
+        android:layout_weight="9"
+        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/edit_note_button"
-            android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/note_title"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="-60dp"
-            android:text="@string/edit"
-            android:textSize="15sp" />
+            android:layout_marginTop="30dp"
+            android:hint="@string/title"
+            android:textSize="30sp" />
 
-        <Button
-            android:id="@+id/delete_note_button"
-            android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/note_body"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:text="@string/delete"
-            android:textSize="15sp" />
+            android:layout_marginTop="10dp"
+            android:hint="@string/body"
+            android:textSize="22sp" />
     </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/delete_note_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:background="@null"
+        android:contentDescription="@string/delete_note"
+        android:src="@drawable/ic_baseline_delete_24" />
 
 </LinearLayout>

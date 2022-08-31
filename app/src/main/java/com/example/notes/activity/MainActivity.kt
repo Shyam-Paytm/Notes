@@ -76,9 +76,14 @@ class MainActivity : AppCompatActivity() {
         viewModel.getAllNotes("%$searchVal%", adapter)
     }
 
-
     // Navigate to add Activity page
     private fun navigateToAddNoteActivity() {
         startActivity(Intent(this, AddNoteActivity::class.java))
     }
 }
+
+// for search, implement logic in code itself
+// show, only fix characters in body
+// Think to show body
+// Read gridlayout
+// fix ui
