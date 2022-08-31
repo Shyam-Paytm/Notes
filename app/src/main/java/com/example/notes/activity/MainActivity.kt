@@ -35,7 +35,9 @@ class MainActivity : AppCompatActivity() {
         adapter = NotesAdapter(this, mutableListOf(), viewModel)
         binding.notesList.adapter = adapter
 
+        // Clear Search and Update Adapter
         viewModel.getAllNotes().observe(this) {
+            binding.searchText.setQuery("", false)
             adapter.changeList(it)
         }
 
