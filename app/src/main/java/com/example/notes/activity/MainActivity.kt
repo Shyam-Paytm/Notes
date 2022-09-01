@@ -16,7 +16,6 @@ import com.example.notes.roomdb.NoteEntity
 import com.example.notes.viewModelFactory.MainViewModelFactory
 import com.example.notes.viewModels.MainViewModel
 import com.google.firebase.auth.FirebaseAuth
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -70,29 +69,11 @@ class MainActivity : AppCompatActivity() {
 
             override fun onQueryTextChange(p0: String?): Boolean {
                 if (p0 != null) {
-                    handleSearch(p0)
+                    viewModel.handleSearch(notesList, adapter, p0)
                 }
                 return true
             }
         })
-    }
-
-    // Handle Search
-    private fun handleSearch(searchVal: String?) {
-        val searchText = searchVal!!.lowercase(Locale.getDefault())
-        val tempNotes: MutableList<NoteEntity> = mutableListOf()
-        if (searchText.isNotEmpty()) {
-            notesList.forEach {
-                val tempTitle = it.title.lowercase(Locale.getDefault())
-                val tempBody = it.body.lowercase(Locale.getDefault())
-                if (tempTitle.contains(searchText) || tempBody.contains(searchText)) {
-                    tempNotes.add(it)
-                }
-            }
-            adapter.changeList(tempNotes)
-        } else {
-            adapter.changeList(notesList)
-        }
     }
 
     // Navigate to add Activity page
@@ -102,20 +83,20 @@ class MainActivity : AppCompatActivity() {
 
     // Create Menu Options
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.nav_menu,menu)
+        menuInflater.inflate(R.menu.nav_menu, menu)
         return super.onCreateOptionsMenu(menu)
     }
 
     // Handle menu options
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
+        when (item.itemId) {
             R.id.logout -> navigateToLoginPage()
         }
         return super.onOptionsItemSelected(item)
     }
 
-    private fun navigateToLoginPage(){
+    private fun navigateToLoginPage() {
         firebaseAuth.signOut()
-        startActivity(Intent(this,LoginActivity::class.java))
+        startActivity(Intent(this, LoginActivity::class.java))
     }
 }
