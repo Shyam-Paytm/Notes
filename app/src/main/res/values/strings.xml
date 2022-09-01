@@ -12,4 +12,13 @@
     <string name="cancel">Cancel</string>
     <string name="delete_note">Delete Note</string>
     <string name="add_note">Add Note</string>
+    <string name="email_id">Email ID</string>
+    <string name="password">Password</string>
+    <string name="please_wait">Please Wait …</string>
+    <string name="login">Login</string>
+    <string name="not_register">Didn\'t Register? Register</string>
+    <string name="register">Register</string>
+    <string name="already_register">Already Registered? Login</string>
+    <string name="logout">Logout</string>
+    <string name="welcome_message">WELCOME \n To \n Notes !!</string>
 </resources>

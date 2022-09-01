@@ -2,9 +2,12 @@ package com.example.notes.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import com.example.notes.R
 import com.example.notes.adapters.NotesAdapter
 import com.example.notes.databinding.ActivityMainBinding
 import com.example.notes.repositories.NoteRepository
@@ -12,6 +15,7 @@ import com.example.notes.roomdb.NoteDB
 import com.example.notes.roomdb.NoteEntity
 import com.example.notes.viewModelFactory.MainViewModelFactory
 import com.example.notes.viewModels.MainViewModel
+import com.google.firebase.auth.FirebaseAuth
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -20,6 +24,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
     private lateinit var adapter: NotesAdapter
     private lateinit var searchView: SearchView
+    private lateinit var firebaseAuth: FirebaseAuth
     private var notesList: MutableList<NoteEntity> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,6 +33,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         searchView = binding.searchText
+        firebaseAuth = FirebaseAuth.getInstance()
 
         // Initialize the Dao, Repository and View Model
         val noteDao = NoteDB.getInstance(this).getNoteDao()
@@ -92,5 +98,24 @@ class MainActivity : AppCompatActivity() {
     // Navigate to add Activity page
     private fun navigateToAddNoteActivity() {
         startActivity(Intent(this, AddNoteActivity::class.java))
+    }
+
+    // Create Menu Options
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.nav_menu,menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    // Handle menu options
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.logout -> navigateToLoginPage()
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun navigateToLoginPage(){
+        firebaseAuth.signOut()
+        startActivity(Intent(this,LoginActivity::class.java))
     }
 }
