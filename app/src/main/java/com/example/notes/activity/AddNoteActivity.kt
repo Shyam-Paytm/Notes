@@ -10,16 +10,20 @@ import com.example.notes.roomdb.NoteDB
 import com.example.notes.roomdb.NoteEntity
 import com.example.notes.viewModelFactory.MainViewModelFactory
 import com.example.notes.viewModels.MainViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 class AddNoteActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddNoteBinding
     private lateinit var viewModel: MainViewModel
     private lateinit var noteRepository: NoteRepository
+    private lateinit var firebaseAuth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddNoteBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        firebaseAuth = FirebaseAuth.getInstance()
 
         noteRepository = NoteRepository(NoteDB.getInstance(this).getNoteDao())
         viewModel = ViewModelProvider(
@@ -52,7 +56,13 @@ class AddNoteActivity : AppCompatActivity() {
                 }
                 viewModel.updateNote(data)
             } else {
-                viewModel.insertNote(NoteEntity(title = title, body = body))
+                viewModel.insertNote(
+                    NoteEntity(
+                        userId = firebaseAuth.currentUser!!.uid,
+                        title = title,
+                        body = body
+                    )
+                )
             }
             onBackPressed()
         }

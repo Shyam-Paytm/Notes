@@ -9,6 +9,8 @@ import java.io.Serializable
 data class NoteEntity(
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0,
+    @ColumnInfo(name = "user_id")
+    var userId: String,
     @ColumnInfo(name = "title")
     var title: String,
     @ColumnInfo(name = "body")

@@ -11,6 +11,11 @@ class NoteRepository(private val noteDao: NoteDao) {
         return noteDao.getAllNote()
     }
 
+    // Fetch all Notes of User
+    fun getAllNotesOfUser(userId: String): LiveData<List<NoteEntity>> {
+        return noteDao.getAllNoteOfUser(userId)
+    }
+
     // Insert a Note
     suspend fun insertNote(noteEntity: NoteEntity) {
         noteDao.insertNote(noteEntity)

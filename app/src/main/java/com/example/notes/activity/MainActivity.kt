@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
         binding.notesList.adapter = adapter
 
         // Clear Search and Update Adapter
-        viewModel.getAllNotes().observe(this) {
+        viewModel.getAllNotesOfUser().observe(this) {
             searchView.setQuery("", false)
             searchView.clearFocus()
             notesList.clear()

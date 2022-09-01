@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
@@ -79,8 +78,6 @@ class LoginActivity : AppCompatActivity() {
         firebaseAuth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
-                    val user = firebaseAuth.currentUser
-                    Log.e("UID", user?.uid.toString())
                     navigateToMainActivity()
                 } else {
                     Toast(this).apply {
@@ -102,8 +99,7 @@ class LoginActivity : AppCompatActivity() {
         firebaseAuth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
-                    val user = firebaseAuth.currentUser
-                    Log.e("USER", user.toString())
+                    navigateToMainActivity()
                 } else {
                     Toast(this).apply {
                         setText(it.exception?.message)
