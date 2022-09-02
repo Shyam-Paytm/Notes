@@ -1,5 +1,7 @@
 package com.example.notes.viewModels
 
+import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,12 +9,15 @@ import com.example.notes.adapters.NotesAdapter
 import com.example.notes.repositories.NoteRepository
 import com.example.notes.roomdb.NoteEntity
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 import java.util.*
 
 class MainViewModel(private val noteRepository: NoteRepository) : ViewModel() {
 
     private var firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    private var db = Firebase.firestore
 
     @Deprecated("Fetch All notes of user now")
     fun getAllNotes(): LiveData<List<NoteEntity>> {
@@ -29,6 +34,12 @@ class MainViewModel(private val noteRepository: NoteRepository) : ViewModel() {
         }
     }
 
+    private fun insertAllNotes(notesList: List<NoteEntity>) {
+        viewModelScope.launch {
+            noteRepository.insertAllNote(notesList)
+        }
+    }
+
     fun updateNote(noteEntity: NoteEntity) {
         viewModelScope.launch {
             noteRepository.updateNote(noteEntity)
@@ -38,6 +49,12 @@ class MainViewModel(private val noteRepository: NoteRepository) : ViewModel() {
     fun deleteNote(noteEntity: NoteEntity) {
         viewModelScope.launch {
             noteRepository.deleteNote(noteEntity)
+        }
+    }
+
+    fun deleteUserNotes(userId: String) {
+        viewModelScope.launch {
+            noteRepository.deleteUserNotes(userId)
         }
     }
 
@@ -56,6 +73,38 @@ class MainViewModel(private val noteRepository: NoteRepository) : ViewModel() {
             adapter.changeList(tempNotes)
         } else {
             adapter.changeList(notesList)
+        }
+    }
+
+    // Fetch from Firestore and store in DB
+    fun storeInDBFromFirestore(context: Context) {
+        viewModelScope.launch {
+            db.collection("notes")
+                .whereEqualTo("user_id", firebaseAuth.currentUser!!.uid)
+                .get()
+                .addOnSuccessListener { result ->
+                    val tempNotes = mutableListOf<NoteEntity>()
+                    for (document in result) {
+                        val title = document.data["title"]
+                        val body = document.data["body"]
+                        val userId = document.data["user_id"] ?: ""
+                        tempNotes.add(
+                            NoteEntity(
+                                userId = userId as String,
+                                title = title as String,
+                                body = body as String
+                            )
+                        )
+                    }
+                    insertAllNotes(tempNotes)
+                }
+                .addOnFailureListener {
+                    Toast(context).apply {
+                        setText(it.message)
+                        duration = Toast.LENGTH_LONG
+                        show()
+                    }
+                }
         }
     }
 }

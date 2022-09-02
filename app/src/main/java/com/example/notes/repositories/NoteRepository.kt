@@ -21,6 +21,11 @@ class NoteRepository(private val noteDao: NoteDao) {
         noteDao.insertNote(noteEntity)
     }
 
+    // Insert List of Notes
+    suspend fun insertAllNote(noteList: List<NoteEntity>) {
+        noteDao.insertAllNote(noteList)
+    }
+
     // Update a Note
     suspend fun updateNote(noteEntity: NoteEntity) {
         noteDao.updateNote(noteEntity)
@@ -29,6 +34,11 @@ class NoteRepository(private val noteDao: NoteDao) {
     // Delete a Note
     suspend fun deleteNote(noteEntity: NoteEntity) {
         noteDao.deleteNote(noteEntity)
+    }
+
+    // Delete All notes of user
+    suspend fun deleteUserNotes(userId: String){
+        noteDao.deleteUserNotes(userId)
     }
 
 }

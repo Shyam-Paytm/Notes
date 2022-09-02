@@ -2,6 +2,8 @@ package com.example.notes.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.example.notes.R
 import com.example.notes.databinding.ActivityAddNoteBinding
@@ -11,19 +13,21 @@ import com.example.notes.roomdb.NoteEntity
 import com.example.notes.viewModelFactory.MainViewModelFactory
 import com.example.notes.viewModels.MainViewModel
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 class AddNoteActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddNoteBinding
     private lateinit var viewModel: MainViewModel
     private lateinit var noteRepository: NoteRepository
-    private lateinit var firebaseAuth: FirebaseAuth
+
+    private val firebaseAuth = FirebaseAuth.getInstance()
+    private val db = Firebase.firestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddNoteBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        firebaseAuth = FirebaseAuth.getInstance()
 
         noteRepository = NoteRepository(NoteDB.getInstance(this).getNoteDao())
         viewModel = ViewModelProvider(
@@ -81,5 +85,40 @@ class AddNoteActivity : AppCompatActivity() {
             setText(data.body)
         }
     }
+
+    /*
+    Add Data in Firestore
+     */
+    private fun addInFirestore() {
+        val title = binding.addTitle.text.toString()
+        val body = binding.addBody.text.toString()
+        val uid = firebaseAuth.currentUser!!.uid
+
+        val noteEntity = hashMapOf(
+            "user_id" to uid,
+            "title" to title,
+            "body" to body
+        )
+
+        db.collection("notes")
+            .add(noteEntity)
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    Toast(this).apply {
+                        setText("Note Added Successfully")
+                        duration = Toast.LENGTH_LONG
+                        show()
+                    }
+                } else {
+                    Toast(this).apply {
+                        setText(it.exception?.message.toString())
+                        duration = Toast.LENGTH_LONG
+                        show()
+                    }
+                }
+            }
+    }
+
+
 
 }

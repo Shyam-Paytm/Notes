@@ -95,8 +95,16 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+    /*
+    Delete al notes of user from DB
+    and sign out
+     */
     private fun navigateToLoginPage() {
+        viewModel.deleteUserNotes(firebaseAuth.currentUser!!.uid)
         firebaseAuth.signOut()
         startActivity(Intent(this, LoginActivity::class.java))
     }
 }
+
+// when login, fetch all data from firestore and store in roomdb
+// back up at every 12 bje

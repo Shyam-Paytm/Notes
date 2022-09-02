@@ -15,9 +15,15 @@ interface NoteDao {
     @Insert
     suspend fun insertNote(noteEntity: NoteEntity)
 
+    @Insert
+    suspend fun insertAllNote(notesList: List<NoteEntity>)
+
     @Update
     suspend fun updateNote(noteEntity: NoteEntity)
 
     @Delete
     suspend fun deleteNote(noteEntity: NoteEntity)
+
+    @Query("DELETE FROM NOTES WHERE user_id = :userId")
+    suspend fun deleteUserNotes(userId: String)
 }
