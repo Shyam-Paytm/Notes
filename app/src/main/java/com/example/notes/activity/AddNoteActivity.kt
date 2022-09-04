@@ -87,6 +87,7 @@ class AddNoteActivity : AppCompatActivity() {
     }
 
     /*
+    TODO : REMOVE IT
     Add Data in Firestore
      */
     private fun addInFirestore() {
@@ -118,7 +119,5 @@ class AddNoteActivity : AppCompatActivity() {
                 }
             }
     }
-
-
 
 }

@@ -42,7 +42,6 @@ class MainActivity : AppCompatActivity() {
             MainViewModelFactory(noteRepository)
         )[MainViewModel::class.java]
 
-
         adapter = NotesAdapter(this, mutableListOf(), viewModel)
         binding.notesList.adapter = adapter
 
