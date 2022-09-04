@@ -3,6 +3,12 @@ package com.example.notes.repositories
 import androidx.lifecycle.LiveData
 import com.example.notes.roomdb.NoteDao
 import com.example.notes.roomdb.NoteEntity
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class NoteRepository(private val noteDao: NoteDao) {
 
@@ -37,8 +43,21 @@ class NoteRepository(private val noteDao: NoteDao) {
     }
 
     // Delete All notes of user
-    suspend fun deleteUserNotes(userId: String){
+    suspend fun deleteUserNotes(userId: String) {
         noteDao.deleteUserNotes(userId)
+    }
+
+    // Back up all notes of user in Firestore
+    fun backupNotesInFirestore() {
+        val db = Firebase.firestore
+        val firebaseAuth = FirebaseAuth.getInstance()
+        val batch = db.batch()
+        CoroutineScope(Dispatchers.IO).launch {
+            noteDao.getAllNoteOfUser(firebaseAuth.currentUser!!.uid).value?.forEach {
+                batch.set(db.collection("notes").document(), it)
+            }
+            batch.commit()
+        }
     }
 
 }

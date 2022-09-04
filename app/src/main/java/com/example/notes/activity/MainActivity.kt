@@ -7,6 +7,7 @@ import android.view.MenuItem
 import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.work.*
 import com.example.notes.R
 import com.example.notes.adapters.NotesAdapter
 import com.example.notes.databinding.ActivityMainBinding
@@ -15,7 +16,9 @@ import com.example.notes.roomdb.NoteDB
 import com.example.notes.roomdb.NoteEntity
 import com.example.notes.viewModelFactory.MainViewModelFactory
 import com.example.notes.viewModels.MainViewModel
+import com.example.notes.worker.NotesWorker
 import com.google.firebase.auth.FirebaseAuth
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,6 +27,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapter: NotesAdapter
     private lateinit var searchView: SearchView
     private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var noteRepository: NoteRepository
     private var notesList: MutableList<NoteEntity> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +40,7 @@ class MainActivity : AppCompatActivity() {
 
         // Initialize the Dao, Repository and View Model
         val noteDao = NoteDB.getInstance(this).getNoteDao()
-        val noteRepository = NoteRepository(noteDao)
+        noteRepository = NoteRepository(noteDao)
         viewModel = ViewModelProvider(
             this,
             MainViewModelFactory(noteRepository)
@@ -73,6 +77,8 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
         })
+
+        backupNotesInFirestore()
     }
 
     // Navigate to add Activity page
@@ -103,7 +109,11 @@ class MainActivity : AppCompatActivity() {
         firebaseAuth.signOut()
         startActivity(Intent(this, LoginActivity::class.java))
     }
-}
 
-// when login, fetch all data from firestore and store in roomdb
-// back up at every 12 bje
+    // Run worker to backup notes
+    private fun backupNotesInFirestore(){
+        val constraint = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+        val workerRequest = PeriodicWorkRequest.Builder(NotesWorker::class.java, 24, TimeUnit.HOURS).setConstraints(constraint).build()
+        WorkManager.getInstance(this).enqueue(workerRequest)
+    }
+}

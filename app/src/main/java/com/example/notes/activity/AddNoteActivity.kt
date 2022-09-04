@@ -2,7 +2,6 @@ package com.example.notes.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.example.notes.R
@@ -87,9 +86,9 @@ class AddNoteActivity : AppCompatActivity() {
     }
 
     /*
-    TODO : REMOVE IT
     Add Data in Firestore
      */
+    @Deprecated("Backing it up at regular interval")
     private fun addInFirestore() {
         val title = binding.addTitle.text.toString()
         val body = binding.addBody.text.toString()

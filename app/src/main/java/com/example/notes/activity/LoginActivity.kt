@@ -37,7 +37,6 @@ class LoginActivity : AppCompatActivity() {
 
         firebaseAuth = FirebaseAuth.getInstance()
 
-
         // Initialize the Dao, Repository and View Model
         val noteDao = NoteDB.getInstance(this).getNoteDao()
         val noteRepository = NoteRepository(noteDao)
