@@ -11,6 +11,7 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
 import com.example.notes.R
 import com.example.notes.databinding.ActivityLoginBinding
 import com.example.notes.repositories.NoteRepository
@@ -49,6 +50,10 @@ class LoginActivity : AppCompatActivity() {
         password = binding.password
         submitButton = binding.submitButton
         navigateText = binding.navigateText
+
+        // Add URL image in imageview
+        Glide.with(this).load("https://clickup.com/blog/wp-content/uploads/2020/01/note-taking.png")
+            .into(binding.notesImage)
 
         // Handle Submit Button as per Login Page or Register Page
         submitButton.setOnClickListener {
