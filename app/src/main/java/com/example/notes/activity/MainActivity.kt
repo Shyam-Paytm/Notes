@@ -7,7 +7,6 @@ import android.view.MenuItem
 import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import androidx.work.*
 import com.example.notes.R
 import com.example.notes.adapters.NotesAdapter
 import com.example.notes.databinding.ActivityMainBinding
@@ -16,9 +15,7 @@ import com.example.notes.roomdb.NoteDB
 import com.example.notes.roomdb.NoteEntity
 import com.example.notes.viewModelFactory.MainViewModelFactory
 import com.example.notes.viewModels.MainViewModel
-import com.example.notes.worker.NotesWorker
 import com.google.firebase.auth.FirebaseAuth
-import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
@@ -78,7 +75,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        backupNotesInFirestore()
+        viewModel.backupNotesInFirestore(this)
     }
 
     // Navigate to add Activity page
@@ -108,12 +105,5 @@ class MainActivity : AppCompatActivity() {
         viewModel.deleteUserNotes(firebaseAuth.currentUser!!.uid)
         firebaseAuth.signOut()
         startActivity(Intent(this, LoginActivity::class.java))
-    }
-
-    // Run worker to backup notes
-    private fun backupNotesInFirestore(){
-        val constraint = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
-        val workerRequest = PeriodicWorkRequest.Builder(NotesWorker::class.java, 24, TimeUnit.HOURS).setConstraints(constraint).build()
-        WorkManager.getInstance(this).enqueue(workerRequest)
     }
 }

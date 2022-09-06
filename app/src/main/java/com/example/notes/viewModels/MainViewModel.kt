@@ -1,18 +1,29 @@
 package com.example.notes.viewModels
 
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequest
+import androidx.work.WorkManager
 import com.example.notes.adapters.NotesAdapter
+import com.example.notes.broadcast.NotesBroadcast
 import com.example.notes.repositories.NoteRepository
 import com.example.notes.roomdb.NoteEntity
+import com.example.notes.worker.NotesWorker
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class MainViewModel(private val noteRepository: NoteRepository) : ViewModel() {
 
@@ -106,5 +117,32 @@ class MainViewModel(private val noteRepository: NoteRepository) : ViewModel() {
                     }
                 }
         }
+    }
+
+    // Run worker to backup notes
+    @Deprecated("Same is being handled by Alarm Manager")
+    private fun backupNotesInFirestoreWork(context: Context) {
+        val constraint = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+        val workerRequest = PeriodicWorkRequest.Builder(NotesWorker::class.java, 24, TimeUnit.HOURS)
+            .setConstraints(constraint).build()
+        WorkManager.getInstance(context).enqueue(workerRequest)
+    }
+
+    // Backup notes in Firestore using Alarm Manager
+    fun backupNotesInFirestore(context: Context) {
+        val calendar: Calendar = Calendar.getInstance()
+        calendar.set(Calendar.HOUR_OF_DAY, 1)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+
+        val alarmManager = context.getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(context, NotesBroadcast::class.java)
+        val pi = PendingIntent.getBroadcast(context, 100, intent, PendingIntent.FLAG_IMMUTABLE)
+        alarmManager.setInexactRepeating(
+            AlarmManager.RTC_WAKEUP,
+            calendar.timeInMillis,
+            12 * 60 * 60 * 1000,
+            pi
+        )
     }
 }
