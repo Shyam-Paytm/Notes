@@ -2,14 +2,12 @@ package com.example.notes.activity
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.notes.R
@@ -29,6 +27,8 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var submitButton: Button
     private lateinit var navigateText: TextView
     private lateinit var viewModel: MainViewModel
+    private lateinit var remember: CheckBox
+    private lateinit var shrd: SharedPreferences
     private var loginPage = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,6 +37,8 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         firebaseAuth = FirebaseAuth.getInstance()
+
+        shrd = getSharedPreferences("notes", MODE_PRIVATE)
 
         // Initialize the Dao, Repository and View Model
         val noteDao = NoteDB.getInstance(this).getNoteDao()
@@ -50,10 +52,13 @@ class LoginActivity : AppCompatActivity() {
         password = binding.password
         submitButton = binding.submitButton
         navigateText = binding.navigateText
+        remember = binding.rememberMe
 
         // Add URL image in imageview
         Glide.with(this).load("https://clickup.com/blog/wp-content/uploads/2020/01/note-taking.png")
             .into(binding.notesImage)
+
+        prefillEmailPassword()
 
         // Handle Submit Button as per Login Page or Register Page
         submitButton.setOnClickListener {
@@ -68,7 +73,6 @@ class LoginActivity : AppCompatActivity() {
                     login()
                 } else {
                     register()
-
                 }
             } else {
                 Toast(this).apply {
@@ -98,6 +102,7 @@ class LoginActivity : AppCompatActivity() {
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     viewModel.storeInDBFromFirestore(this)
+                    saveEmailPassword()
                     navigateToMainActivity()
                 } else {
                     Toast(this).apply {
@@ -119,6 +124,7 @@ class LoginActivity : AppCompatActivity() {
         firebaseAuth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
+                    saveEmailPassword()
                     navigateToMainActivity()
                 } else {
                     Toast(this).apply {
@@ -149,6 +155,7 @@ class LoginActivity : AppCompatActivity() {
         submitButton.text = getString(R.string.login)
         loginPage = true
         navigateText.text = getString(R.string.not_register)
+        prefillEmailPassword()
     }
 
     private fun navigateToMainActivity() {
@@ -159,6 +166,30 @@ class LoginActivity : AppCompatActivity() {
     private fun View.hideKeyboard() {
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(windowToken, 0)
+    }
+
+    // Save email and password in Device storage
+    private fun saveEmailPassword() {
+        if (remember.isChecked) {
+            val editor = shrd.edit()
+            editor.putString("email", email.text.toString())
+            editor.putString("password", password.text.toString())
+            editor.apply()
+        } else removeEmailPassword()
+    }
+
+    // Prefill email and password field
+    private fun prefillEmailPassword() {
+        email.setText(shrd.getString("email", ""))
+        password.setText(shrd.getString("password", ""))
+    }
+
+    // Remove email and password from Device storage
+    private fun removeEmailPassword() {
+        val editor = shrd.edit()
+        editor.remove("email")
+        editor.remove("password")
+        editor.apply()
     }
 
     override fun onStart() {

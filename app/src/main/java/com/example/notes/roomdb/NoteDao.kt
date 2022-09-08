@@ -12,6 +12,9 @@ interface NoteDao {
     @Query("SELECT * FROM NOTES WHERE user_id =:userId")
     fun getAllNoteOfUser(userId: String): LiveData<List<NoteEntity>>
 
+    @Query("SELECT * FROM NOTES WHERE user_id = :userId AND modified = 'true'")
+    fun getAllModifiedNotesOfUser(userId: String): LiveData<List<NoteEntity>>
+
     @Insert
     suspend fun insertNote(noteEntity: NoteEntity)
 

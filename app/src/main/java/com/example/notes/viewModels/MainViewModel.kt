@@ -63,12 +63,6 @@ class MainViewModel(private val noteRepository: NoteRepository) : ViewModel() {
         }
     }
 
-    fun deleteUserNotes(userId: String) {
-        viewModelScope.launch {
-            noteRepository.deleteUserNotes(userId)
-        }
-    }
-
     // Handle Search
     fun handleSearch(notesList: List<NoteEntity>, adapter: NotesAdapter, searchVal: String?) {
         val searchText = searchVal!!.lowercase(Locale.getDefault())
@@ -99,11 +93,14 @@ class MainViewModel(private val noteRepository: NoteRepository) : ViewModel() {
                         val title = document.data["title"]
                         val body = document.data["body"]
                         val userId = document.data["user_id"] ?: ""
+                        // Store Firestore id too, inorder to update it if any change occurs
                         tempNotes.add(
                             NoteEntity(
                                 userId = userId as String,
                                 title = title as String,
-                                body = body as String
+                                body = body as String,
+                                modified = false,
+                                fireStoreId = document.id
                             )
                         )
                     }
@@ -120,7 +117,7 @@ class MainViewModel(private val noteRepository: NoteRepository) : ViewModel() {
     }
 
     // Run worker to backup notes
-    @Deprecated("Same is being handled by Alarm Manager")
+    @Deprecated("Same is being now handled by Alarm Manager")
     private fun backupNotesInFirestoreWork(context: Context) {
         val constraint = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
         val workerRequest = PeriodicWorkRequest.Builder(NotesWorker::class.java, 24, TimeUnit.HOURS)
@@ -144,5 +141,13 @@ class MainViewModel(private val noteRepository: NoteRepository) : ViewModel() {
             12 * 60 * 60 * 1000,
             pi
         )
+    }
+
+    /*
+    First back up notes in Firestore
+    then delete all records
+     */
+    fun handleLogout() {
+        noteRepository.backupNotesInFirestore(deleteNotes = true)
     }
 }

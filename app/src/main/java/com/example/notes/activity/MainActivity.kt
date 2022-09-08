@@ -102,7 +102,7 @@ class MainActivity : AppCompatActivity() {
     and sign out
      */
     private fun navigateToLoginPage() {
-        viewModel.deleteUserNotes(firebaseAuth.currentUser!!.uid)
+        viewModel.handleLogout()
         firebaseAuth.signOut()
         startActivity(Intent(this, LoginActivity::class.java))
     }

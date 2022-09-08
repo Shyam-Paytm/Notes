@@ -39,25 +39,38 @@ class NoteRepository(private val noteDao: NoteDao) {
 
     // Delete a Note
     suspend fun deleteNote(noteEntity: NoteEntity) {
+        if (noteEntity.fireStoreId != null) {
+            val db = Firebase.firestore
+            db.collection("notes").document(noteEntity.fireStoreId!!)
+                .delete()
+        }
         noteDao.deleteNote(noteEntity)
     }
 
     // Delete All notes of user
-    suspend fun deleteUserNotes(userId: String) {
+    private suspend fun deleteUserNotes(userId: String) {
         noteDao.deleteUserNotes(userId)
     }
 
-    // Back up all notes of user in Firestore
-    fun backupNotesInFirestore() {
+    // Back up all Modified notes of user in Firestore
+    fun backupNotesInFirestore(deleteNotes: Boolean = false) {
         val db = Firebase.firestore
-        val firebaseAuth = FirebaseAuth.getInstance()
         val batch = db.batch()
+        val userId = FirebaseAuth.getInstance().currentUser!!.uid
         CoroutineScope(Dispatchers.IO).launch {
-            noteDao.getAllNoteOfUser(firebaseAuth.currentUser!!.uid).value?.forEach {
-                batch.set(db.collection("notes").document(), it)
+            // Fetch all modified notes
+            noteDao.getAllModifiedNotesOfUser(userId).value?.forEach {
+                // If document already exist in Firestore then update it
+                val collection = db.collection("notes")
+                if (it.fireStoreId != null) {
+                    batch.set(collection.document(it.fireStoreId!!), it)
+                }
+                batch.set(collection.document(), it)
             }
             batch.commit()
+            if (deleteNotes) {
+                deleteUserNotes(userId)
+            }
         }
     }
-
 }

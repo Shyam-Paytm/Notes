@@ -53,17 +53,23 @@ class AddNoteActivity : AppCompatActivity() {
             val title = binding.addTitle.text.toString()
             val body = binding.addBody.text.toString()
             if (data != null) {
-                data.apply {
-                    this.title = title
-                    this.body = body
+                val modified = title != data.title || body != data.body
+                // If either of them modified then only update
+                if (modified) {
+                    data.apply {
+                        this.title = title
+                        this.body = body
+                        this.modified = true
+                    }
+                    viewModel.updateNote(data)
                 }
-                viewModel.updateNote(data)
             } else {
                 viewModel.insertNote(
                     NoteEntity(
                         userId = firebaseAuth.currentUser!!.uid,
                         title = title,
-                        body = body
+                        body = body,
+                        modified = false
                     )
                 )
             }
@@ -118,5 +124,4 @@ class AddNoteActivity : AppCompatActivity() {
                 }
             }
     }
-
 }

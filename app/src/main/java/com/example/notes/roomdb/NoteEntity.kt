@@ -14,5 +14,9 @@ data class NoteEntity(
     @ColumnInfo(name = "title")
     var title: String,
     @ColumnInfo(name = "body")
-    var body: String
+    var body: String,
+    @ColumnInfo(name = "modified")
+    var modified: Boolean = false,
+    @ColumnInfo(name = "fireStore_id")
+    var fireStoreId: String? = null
 ) : Serializable
