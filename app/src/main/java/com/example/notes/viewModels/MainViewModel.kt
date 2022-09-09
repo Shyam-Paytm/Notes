@@ -4,6 +4,8 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
@@ -14,6 +16,7 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import com.example.notes.adapters.NotesAdapter
+import com.example.notes.broadcast.BatteryReceiver
 import com.example.notes.broadcast.NotesBroadcast
 import com.example.notes.repositories.NoteRepository
 import com.example.notes.roomdb.NoteEntity
@@ -149,5 +152,16 @@ class MainViewModel(private val noteRepository: NoteRepository) : ViewModel() {
      */
     fun handleLogout() {
         noteRepository.backupNotesInFirestore(deleteNotes = true)
+    }
+
+    /*
+    Send broadcast
+     */
+    fun sendCustomBroadcast(context: Context, receiver: BatteryReceiver) {
+        context.registerReceiver(receiver, IntentFilter("android.intent.br.CUSTOM_INTENT"))
+        val intent = Intent()
+        intent.action = "android.intent.br.CUSTOM_INTENT"
+        context.sendBroadcast(intent)
+        Log.d("Debug", "Register Receiver")
     }
 }

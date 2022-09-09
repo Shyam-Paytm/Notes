@@ -2,6 +2,7 @@ package com.example.notes.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.SearchView
@@ -9,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.example.notes.R
 import com.example.notes.adapters.NotesAdapter
+import com.example.notes.broadcast.BatteryReceiver
 import com.example.notes.databinding.ActivityMainBinding
 import com.example.notes.repositories.NoteRepository
 import com.example.notes.roomdb.NoteDB
@@ -25,6 +27,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var searchView: SearchView
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var noteRepository: NoteRepository
+    private lateinit var receiver: BatteryReceiver
     private var notesList: MutableList<NoteEntity> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,6 +37,7 @@ class MainActivity : AppCompatActivity() {
 
         searchView = binding.searchText
         firebaseAuth = FirebaseAuth.getInstance()
+        receiver = BatteryReceiver()
 
         // Initialize the Dao, Repository and View Model
         val noteDao = NoteDB.getInstance(this).getNoteDao()
@@ -105,5 +109,22 @@ class MainActivity : AppCompatActivity() {
         viewModel.handleLogout()
         firebaseAuth.signOut()
         startActivity(Intent(this, LoginActivity::class.java))
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d("Debug", "Unregister Receiver")
+        unregisterReceiver(receiver)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("Debug", "On resume call")
+        viewModel.sendCustomBroadcast(this, receiver)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("Debug", "OnPause called")
     }
 }
