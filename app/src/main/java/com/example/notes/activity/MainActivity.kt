@@ -12,6 +12,7 @@ import com.example.notes.R
 import com.example.notes.adapters.NotesAdapter
 import com.example.notes.broadcast.BatteryReceiver
 import com.example.notes.databinding.ActivityMainBinding
+import com.example.notes.permissions.Permission
 import com.example.notes.repositories.NoteRepository
 import com.example.notes.roomdb.NoteDB
 import com.example.notes.roomdb.NoteEntity
@@ -29,6 +30,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var noteRepository: NoteRepository
     private lateinit var receiver: BatteryReceiver
     private var notesList: MutableList<NoteEntity> = mutableListOf()
+    private lateinit var permission: Permission
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +40,7 @@ class MainActivity : AppCompatActivity() {
         searchView = binding.searchText
         firebaseAuth = FirebaseAuth.getInstance()
         receiver = BatteryReceiver()
+        permission = Permission(this)
 
         // Initialize the Dao, Repository and View Model
         val noteDao = NoteDB.getInstance(this).getNoteDao()
@@ -80,6 +83,10 @@ class MainActivity : AppCompatActivity() {
         })
 
         viewModel.backupNotesInFirestore(this)
+
+        binding.requestPermission.setOnClickListener {
+            permission.applyForPermission()
+        }
     }
 
     // Navigate to add Activity page
@@ -117,8 +124,8 @@ class MainActivity : AppCompatActivity() {
         unregisterReceiver(receiver)
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
         Log.d("Debug", "On resume call")
         viewModel.sendCustomBroadcast(this, receiver)
     }
@@ -126,5 +133,21 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         Log.d("Debug", "OnPause called")
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == Permission.REQ_CODE) {
+            permission.updatePermission(permissions, grantResults)
+        }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        super.onDestroy()
     }
 }

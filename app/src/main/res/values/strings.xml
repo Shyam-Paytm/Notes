@@ -22,4 +22,5 @@
     <string name="logout">Logout</string>
     <string name="welcome_message">WELCOME \n To \n Notes !!</string>
     <string name="remember_me">Remember Me</string>
+    <string name="request_permissions">Request Permissions</string>
 </resources>
